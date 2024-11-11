@@ -132,6 +132,22 @@ tham khảo tại [lpi.org](https://learning.lpi.org/en/learning-materials/101-5
 
 ### 2.1. The Debain Package Tool `dpkg`
 
+#### 2.1.0. Các list các phầm mềm đã được cài đặt trên hệ thống và kiểm tra xem một ứng dụng đã được cài đặt trên hệ thống chưa
+
+Cách 1: sử dụng `dpkg`
+
+```
+dpkg -l
+```
+
+Cách 2: sử dụng `apt`
+
+```
+apt list --install
+```
+
+**Kiểm tra 1  ứng dụng đã được cài đặt hay chưa chỉ cần thêm lệnh grep để tìm kiếm theo tên ứng dụng**
+
 #### 2.1.1. Cài đặt gói `-i`
 
 `dpkg` với thao tác cơ bản nhất là cài đặt gói `.deb` 
@@ -301,6 +317,7 @@ Trong ví dụ trên, mục nhập `liblzma5 - XZ-format compression library` d�
 # apt-cache show liblzma5
 ```
 
-2.2.7.The  Sources List (danh sách nguồn)
+#### 2.2.7.The  Sources List (danh sách nguồn)
 
 tham khảo thêm tại [lpi.org](https://learning.lpi.org/vi/learning-materials/101-500/102/102.4/102.4_01/) 
+
