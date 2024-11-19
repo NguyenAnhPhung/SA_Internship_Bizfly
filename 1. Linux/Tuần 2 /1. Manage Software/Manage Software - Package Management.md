@@ -277,6 +277,14 @@ apt-get install packagename
 apt-get remove packagename
 ```
 
+cách gỡ cài đặt tất cả thành phần liên quan đến package 
+
+```
+sudo apt remove --purge virtualbox*
+```
+
+
+
 #### 2.2.3. Fixing Broken Dependencies (phần phụ thuộc bị hỏng)
 
 Có thể sẽ có “phần phụ thuộc bị hỏng” trên một hệ thống. Điều này có nghĩa là một hoặc nhiều gói đã được cài đặt phụ thuộc vào các gói khác chưa được cài đặt hoặc không còn tồn tại nữa. Điều này có thể xảy ra do lỗi APT hoặc do gói được cài đặt thủ công.
@@ -317,7 +325,25 @@ Trong ví dụ trên, mục nhập `liblzma5 - XZ-format compression library` d�
 # apt-cache show liblzma5
 ```
 
-#### 2.2.7.The  Sources List (danh sách nguồn)
+#### 2.2.7. Quản lí sources 
+
+##### 1. Thêm kho lưu trữ mới 
+
+```
+sudo add-apt-repository <ppa:kho_lưu_trữ>
+```
+
+##### 2. Gỡ bỏ kho lưu trữ 
+
+```
+sudo add-apt-repository --remove <ppa:kho_lưu_trữ>
+```
+
+Cập nhật sau khi sửa thêm kho lưu trữ
+
+```
+sudo apt update 
+```
 
 tham khảo thêm tại [lpi.org](https://learning.lpi.org/vi/learning-materials/101-500/102/102.4/102.4_01/) 
 
