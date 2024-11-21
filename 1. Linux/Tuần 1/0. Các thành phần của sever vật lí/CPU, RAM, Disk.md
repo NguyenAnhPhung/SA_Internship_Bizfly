@@ -91,7 +91,8 @@ Swap:          4.0Gi          0B       4.0Gi
 
 thông số buff/cache cả 2 loại bộ nhớ này giúp tăng hiệu suất hệ thống
 - **Buffer** (Bộ đệm) là vùng bộ nhớ tạm thời mà hệ điều hành sử dụng để **lưu trữ dữ liệu sắp được ghi vào ổ đĩa hoặc đọc từ ổ đĩa**.buff được sử dụng ví dụ bạn muốn lưu dữ liệu vào ổ cứng thì ram sẽ kh lưu ngay mà nó được dữ lại ở buff và lưu dần dần điều này giảm thiểu số lần truy cập vào ổ cứng 
-- **Cache** (Bộ nhớ đệm): giúp việc đọc dữ liệu nhanh hơn bằng cách lưu trữ dữ liệu mà hệ thống hoặc ứng dụng có khả năng sẽ sử dụng lại trong tương lai. Giúp giảm thời gian truy cập dữ liệu trong các lần sử dụng tiếp theo, thay vì phải đọc dữ liệu từ ổ đĩa (vốn rất chậm).
+- **Cache** (Bộ nhớ đệm): khi cpu muốn dữ liệu từ ram thì nó sẽ đọc dữ liệu từ cache ram trước vì ở cache ram sẽ lưu những dữ liệu được cho là sẽ sử dụng trong tương tại và phần cache ram này có tốc độ truy cập nhanh hơn so vơi ram (tốc độ của cache ram nhanh hơn so với ram vì nó ở gần cpu hơn)
+- Khi CPU yêu cầu dữ liệu mà không có trong **L1, L2, L3 Cache** của **CPU**, **cache RAM** có thể cung cấp dữ liệu này. 
 
 available: là vùng bộ nhớ sẵn sàng nó sẽ bằng free + buff/cache có thể giải phóng ngay lập tức ở đây sẽ là 3.9g free và 3G buff/cache
 
