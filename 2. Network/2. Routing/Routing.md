@@ -55,6 +55,152 @@ Khi router nhận được một gói tin, nó sẽ thực hiện các bước s
 3. **Gửi gói tin:**
    Gói tin sẽ được gửi đi thông qua giao diện tương ứng với route.
 
+## 2. Routing Table
+
+tham khảo tại [techtarget](https://www.techtarget.com/searchnetworking/definition/routing-table)
+
+### 2.1. Bảng định tuyến là gì?
+
+**Bảng định tuyến** là một tập hợp các quy tắc được tổ chức dưới dạng bảng, sử dụng để xác định nơi các gói dữ liệu (data packets) sẽ được chuyển đến trong một mạng dựa trên giao thức Internet (IP). Bảng định tuyến thường được lưu trữ trong bộ nhớ RAM của các thiết bị chuyển tiếp dữ liệu, chẳng hạn như bộ định tuyến (router) hoặc bộ chuyển mạch mạng (network switch).
+
+Mỗi bảng định tuyến là duy nhất, đóng vai trò như một bản đồ địa chỉ cho mạng. Nó lưu trữ thông tin về địa chỉ nguồn và đích của các thiết bị mạng dưới dạng tiền tố (prefixes), cùng với địa chỉ cổng mặc định (default gateway) và thông tin định tuyến liên quan.
+
+Bảng định tuyến có thể được cập nhật tự động thông qua các giao thức định tuyến mạng hoặc được cấu hình thủ công bởi quản trị viên mạng bằng cách thêm các mục định tuyến tĩnh.
+
+### 2.2. Cách thức hoạt động của bảng định tuyến 
+
+Mục đích chính của bảng định tuyến là giúp bộ định tuyến đưa ra quyết định chuyển tiếp dữ liệu (routing decisions) hiệu quả. Khi một gói tin đi qua một bộ định tuyến để được chuyển đến một thiết bị trên mạng khác, bộ định tuyến sẽ tham chiếu bảng định tuyến để xác định:
+
+1. **Địa chỉ IP của thiết bị đích.**
+2. **Đường dẫn tốt nhất** để chuyển tiếp gói tin.
+
+Gói tin sau đó được chuyển đến một bộ định tuyến lân cận (next hop) theo thông tin trong bảng định tuyến, tiếp tục đi qua các bước này cho đến khi đến đích cuối cùng.
+
+Khi một gói tin được gửi đi qua mạng, nó trải qua các bước sau:
+
+1. **Máy tính gửi gói tin đến bộ định tuyến:**
+   - Máy tính gắn địa chỉ IP nguồn và đích vào gói tin (tương tự như ghi địa chỉ trên bưu phẩm) và gửi đến bộ định tuyến thông qua mạng cục bộ (LAN).
+2. **Bộ định tuyến nhận gói tin:**
+   - Bộ định tuyến phân tích gói tin và so sánh với bảng định tuyến nội bộ để xác định đường dẫn hiệu quả nhất để gửi gói tin.
+3. **Bộ định tuyến chuyển tiếp gói tin:**
+   - Bộ định tuyến gửi gói tin đến bước nhảy tiếp theo (next hop) theo thông tin trong bảng định tuyến.
+4. **Quá trình lặp lại:**
+   - Tại mỗi bước nhảy, một bộ định tuyến khác tiếp quản và tiếp tục quyết định nơi gói tin cần đến dựa trên bảng định tuyến của nó.
+5. **Gói tin đến đích:**
+   - Khi gói tin đến bộ định tuyến cuối cùng nằm trong cùng mạng với thiết bị đích, nó được gửi trực tiếp đến thiết bị đó.
+
+### 2.3. Các thành phần của bảng định tuyến 
+
+#### 2.3.1. Lệnh hiển thị bảng định tuyến  (linux)
+
+```
+netstat -rn
+
+```
+
+**`-r`**: Hiển thị bảng định tuyến.
+
+**`-n`**: Hiển thị địa chỉ IP và cổng dưới dạng số thay vì tên (để tránh phải tra cứu DNS).
+
+kết quả:
+
+```
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags   MSS Window  irtt Iface
+0.0.0.0         192.168.1.1     0.0.0.0         UG      0   0        0    eth0
+192.168.1.0     0.0.0.0         255.255.255.0   U       0   0        0    eth0
+```
+
+1. **`Destination` (Mạng đích)**
+
+   - Địa chỉ mạng hoặc địa chỉ IP mà gói tin cần đến.
+
+   - Ví dụ
+
+     :
+
+     - `0.0.0.0`: Định tuyến mặc định, áp dụng khi không có tuyến nào khác khớp.
+     - `192.168.1.0`: Một mạng cụ thể (mạng con 192.168.1.x).
+
+2. **`Gateway` (Cổng/gateway)**
+
+   - Địa chỉ IP của cổng trung gian mà gói tin sẽ đi qua để đến đích.
+
+   - Ví dụ
+
+     :
+
+     - `192.168.1.1`: Gói tin sẽ đi qua gateway này để đến mạng đích.
+     - `0.0.0.0`: Không cần qua gateway, gói tin trực tiếp đến mạng cục bộ.
+
+3. **`Genmask` (Mặt nạ mạng)**
+
+   - Xác định phạm vi mạng đích.
+
+   - Ví dụ
+
+     :
+
+     - `0.0.0.0`: Áp dụng cho mọi địa chỉ (định tuyến mặc định).
+     - `255.255.255.0`: Mạng con có dải địa chỉ từ `192.168.1.0` đến `192.168.1.255`.
+
+4. **`Flags` (Cờ trạng thái)**
+
+   - Thông tin về tuyến đường. Các giá trị phổ biến:
+     - `U`: Tuyến đường hoạt động (Up).
+     - `G`: Tuyến đường qua gateway.
+     - `H`: Đích là một host (máy đơn lẻ).
+     - `R`: Tuyến đường cần được khôi phục lại.
+     - `D`: Tuyến đường được cài đặt động.
+     - `M`: Tuyến đường được sửa đổi.
+
+5. **`MSS` (Maximum Segment Size)**
+
+   - Kích thước phân đoạn tối đa trong TCP trên tuyến này.
+   - Thường giá trị này là `0`, vì Linux không ghi rõ MSS trong bảng định tuyến.
+
+6. **`Window`**
+
+   - Kích thước cửa sổ TCP, thường hiển thị là `0` trên bảng định tuyến.
+
+7. **`irtt` (Initial Round Trip Time)**
+
+   - Thời gian vòng tròn ban đầu (RTT) để xác định thời gian truyền. Giá trị này thường không được sử dụng và hiển thị là `0`.
+
+8. **`Iface` (Giao diện mạng)**
+
+   - Tên của giao diện mạng liên quan đến tuyến đường này.
+
+   - Ví dụ
+
+     :
+
+     - `eth0`: Ethernet.
+     - `wlan0`: Wi-Fi.
+
+#### 2.3.2. Thành phần của bảng định tuyến 
+
+![img](https://www.techtarget.com/rms/onlineimages/routing_table-f.jpg)
+
+Một bảng định tuyến chứa các mục (entry) với các trường chính như sau:
+
+1. **Đích đến (Destination):**
+   - Địa chỉ IP cuối cùng mà gói tin cần đến.
+2. **Subnet mask (Netmask):**
+   - Địa chỉ mạng 32-bit dùng để xác định thiết bị đích thuộc mạng nội bộ hay mạng từ xa.
+   - **Ví dụ:** Subnet mask giúp chia nhỏ một mạng lớn thành các mạng con nhỏ hơn (subnetting) nhằm tối ưu hóa hiệu quả định tuyến.
+3. **Gateway (Cổng):**
+   - Địa chỉ IP của thiết bị kế tiếp mà gói tin cần được chuyển đến (next hop).
+4. **Interface (Giao diện):**
+   - Giao diện mạng mà thiết bị sử dụng để gửi gói tin (ví dụ: `eth0`, `eth1`).
+5. **Metric (Chỉ số ưu tiên):**
+   - Một giá trị giúp xác định đường dẫn tốt nhất đến một mạng cụ thể. Nếu có nhiều đường dẫn đến cùng một đích, đường dẫn có chỉ số metric thấp hơn sẽ được ưu tiên.
+6. **Routes (Tuyến đường):**
+   - Bao gồm:
+     - **Subnet trực tiếp:** Các mạng được kết nối trực tiếp với thiết bị.
+     - **Subnet gián tiếp:** Các mạng không kết nối trực tiếp nhưng có thể truy cập thông qua một hoặc nhiều bước nhảy (hops).
+     - **Default route:** Đường dẫn mặc định sử dụng khi không có thông tin cụ thể trong bảng định tuyến.
+
 # Routing (redhat)
 
 tham khảo tại [redhat](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/networking_guide/ch-configuring_static_routes_and_the_default_gateway#sec-Introduction_to_Understanding_Routing_and_Gateway)
@@ -100,6 +246,8 @@ Dưới đây là bảng so sánh giữa **định tuyến tĩnh** và **định
 | **Ví dụ**                 | Cấu hình định tuyến tĩnh trên các router của mạng nội bộ.    | Cấu hình định tuyến động giữa các router sử dụng OSPF, RIP hoặc BGP. |
 
 ## 3. Hướng dẫn cấu hình định tuyến tĩnh 
+
+đọc thêm tại [linkedln](https://www.linkedin.com/pulse/static-routing-%C4%91%E1%BB%8Bnh-tuy%E1%BA%BFn-t%C4%A9nh-v%C5%A9-nguy%E1%BB%85n/?trackingId=ytFyyoLlTxGPddLQ31O07w%3D%3D)
 
 tham khảo thêm tại [redhat](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/7/html/networking_guide/sec-configuring_static_routes_with_ip_commands#sec-Configuring_Static_Routes_with_ip_Commands)
 
