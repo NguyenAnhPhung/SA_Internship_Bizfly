@@ -186,6 +186,14 @@ sudo nano /etc/iptables/rules.v4
 
 ## 4. Lưu lại cấu hình sau khi sửa đổi 
 
+cài đặt 
+
+```
+sudo apt install iptables-persistent
+```
+
+
+
 ```
 sudo iptables-save > /etc/iptables/rules.v4
 
