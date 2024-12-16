@@ -143,7 +143,7 @@ dpkg -l
 Cách 2: sử dụng `apt`
 
 ```
-apt list --install
+apt list --installed
 ```
 
 **Kiểm tra 1  ứng dụng đã được cài đặt hay chưa chỉ cần thêm lệnh grep để tìm kiếm theo tên ứng dụng**

@@ -16,5 +16,5 @@ lab laij raid 1 0
 
 crontab 
 
-kt gois
+kt goi
 
