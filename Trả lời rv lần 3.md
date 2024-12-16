@@ -1,4 +1,11 @@
-# cơ chế hoạt động của DNS
+# Cơ chế hoạt động của DNS
+
+DNS là dịch vụ phân giải tên miền thành địa chỉ ip vì các máy tính giao tiếp với nhau qua ip chứ kp tên miền 
+
+**Tại sao cần sử dụng đển DNS?**
+
+- để cho dễ nhớ thay vì phải truy cập bằng địa chỉ ip thì có thể truy cập bằng tên miền 
+- trong trường hợp trang web thay đổ máy chủ, thay đổi địa chỉ ip 
 
 ​	![https://media.geeksforgeeks.org/wp-content/uploads/20240619160023/Working-of-DNS.gif](https://media.geeksforgeeks.org/wp-content/uploads/20240619160023/Working-of-DNS.gif)
 
@@ -141,3 +148,132 @@ Gateway không chỉ đơn thuần là một thiết bị chuyển tiếp dữ l
 - Các chức năng chính của Gateway bao gồm **chuyển đổi giao thức**, **kết nối các mạng khác loại**, và **bảo mật dữ liệu truyền qua các mạng**.
 
 Gateway rất quan trọng trong các môi trường mạng phức tạp, đặc biệt là trong doanh nghiệp, hệ thống IoT, và môi trường công nghệ đa giao thức.
+
+
+
+# DCHP là gì? cách hoạt động?
+
+​	**DHCP** (Dynamic Host Configuration Protocol) là giao thức hoạt động ở tầng ứng dụng của giao thức UDP. Mục đích chính của DHCP là tự động cấp phát địa chỉ IP và thông tin cấu hình TCP/IP cho các thiết bị trong mạng.
+
+### **Nguyên lý hoạt động của DHCP**
+
+DHCP hoạt động theo mô hình client-server và sử dụng các dịch vụ của UDP. Giao thức này sử dụng cổng **67** cho máy chủ và cổng **68** cho máy khách. Địa chỉ IP được cấp phát từ một **pool địa chỉ** (kho địa chỉ) được định nghĩa trước.
+
+Trong quá trình giao tiếp, client và server trao đổi 4 thông điệp chính, được gọi là quá trình **DORA**:
+
+1. **Discover**
+2. **Offer**
+3. **Request**
+4. **Acknowledge**
+
+Tuy nhiên, tổng cộng có **8 loại thông điệp DHCP**, bao gồm:
+
+------
+
+### **8 thông điệp trong DHCP**
+
+#### **1. DHCP Discover Message**
+
+- **Mục đích**: Tìm kiếm máy chủ DHCP trong mạng.
+
+- Cách hoạt động
+
+  :
+
+  - Client phát đi thông điệp broadcast với địa chỉ IP nguồn là `0.0.0.0` (chưa có IP) và địa chỉ IP đích là `255.255.255.255` (broadcast).
+  - Địa chỉ MAC nguồn là MAC của client, còn địa chỉ MAC đích là `FF:FF:FF:FF:FF:FF` (broadcast MAC).
+
+#### **2. DHCP Offer Message**
+
+- **Mục đích**: Server phản hồi với một đề nghị, cung cấp một địa chỉ IP chưa được sử dụng và các thông tin cấu hình TCP/IP khác.
+
+- Cách hoạt động
+
+  :
+
+  - Server gửi thông điệp broadcast với địa chỉ IP nguồn là IP của server và địa chỉ IP đích là `255.255.255.255`.
+  - Địa chỉ MAC nguồn là MAC của server, và MAC đích là MAC của client.
+
+#### **3. DHCP Request Message**
+
+- **Mục đích**: Client chấp nhận đề nghị từ server và gửi yêu cầu xác nhận.
+
+- Cách hoạt động
+
+  :
+
+  - Client phát đi một thông điệp broadcast yêu cầu sử dụng địa chỉ IP được đề nghị.
+  - Trước khi gửi, client sử dụng ARP để kiểm tra xem địa chỉ IP có bị trùng lặp hay không.
+
+#### **4. DHCP Acknowledge Message**
+
+- **Mục đích**: Server xác nhận và cấp phát địa chỉ IP với thời gian thuê (lease time).
+
+- Cách hoạt động
+
+  :
+
+  - Server lưu thông tin của client với địa chỉ IP được cấp và các thông tin cấu hình TCP/IP.
+  - Sau đó, server gửi thông điệp xác nhận (ACK) đến client.
+
+------
+
+#### **5. DHCP Negative Acknowledgment (NAK)**
+
+- **Mục đích**: Server thông báo rằng địa chỉ IP yêu cầu không hợp lệ hoặc không còn địa chỉ nào khả dụng.
+
+#### **6. DHCP Decline**
+
+- **Mục đích**: Client từ chối địa chỉ IP được cung cấp do phát hiện địa chỉ đã bị sử dụng bởi thiết bị khác (qua kiểm tra ARP).
+
+#### **7. DHCP Release**
+
+- **Mục đích**: Client gửi thông báo đến server để giải phóng địa chỉ IP và hủy thời gian thuê còn lại.
+
+#### **8. DHCP Inform**
+
+- **Mục đích**: Client đã được gán IP thủ công nhưng vẫn cần lấy thông tin cấu hình khác (như domain name).
+- **Cách hoạt động**: Client gửi thông điệp yêu cầu thông tin (Inform), và server phản hồi bằng thông điệp ACK với các thông tin cấu hình.
+
+------
+
+### **Tóm tắt quy trình DORA**
+
+1. **Discover**: Client phát hiện server.
+2. **Offer**: Server đề nghị địa chỉ IP.
+3. **Request**: Client yêu cầu xác nhận địa chỉ IP.
+4. **Acknowledge**: Server xác nhận và cấp phát IP.
+
+**DHCP Offer** là một bước trung gian quan trọng để:
+
+1. Đảm bảo client và server thỏa thuận một cách rõ ràng về địa chỉ IP và thông số cấu hình.
+2. Tránh các vấn đề xung đột địa chỉ IP.
+3. Cho phép client lựa chọn server phù hợp trong môi trường mạng có nhiều DHCP server.
+
+# SSh bằng key 
+
+| **Public Key** (Khóa công khai) | **Private Key** (Khóa riêng tư) |
+| ------------------------------- | ------------------------------- |
+|                                 |                                 |
+
+| Là khóa **công khai**, có thể chia sẻ tự do với bất kỳ ai. | Là khóa **bí mật**, chỉ chủ sở hữu giữ và không được tiết lộ. |
+| ---------------------------------------------------------- | ------------------------------------------------------------ |
+|                                                            |                                                              |
+
+| Được sử dụng để **mã hóa dữ liệu** hoặc **xác thực chữ ký số**. | Được sử dụng để **giải mã dữ liệu** hoặc **tạo chữ ký số**. |
+| ------------------------------------------------------------ | ----------------------------------------------------------- |
+|                                                              |                                                             |
+
+tạo khóa 
+
+```
+sudo ssh-keygen -t rsa
+
+```
+
+cp khóa đến máy chủ
+
+```
+sudo ssh-copy-id nameserver@ip
+```
+
