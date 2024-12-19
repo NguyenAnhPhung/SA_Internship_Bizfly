@@ -218,7 +218,22 @@ ping đến group cụ thể
 ansible -i /path/to/inventory_file -m ping name_group
 ```
 
+Ví dụ nội dung file inventory:
 
+```
+[web_servers]
+vm1 ansible_host=<VM_IP> ansible_user=user
+
+```
+
+ngoài ra ansible -i có thể thực hiện nhiều thao tác liên quan đến lệnh khác 
+
+```
+ansible -i /path/to/inventory -m command -a "your command" all
+```
+
+nhưng nếu có muốn thực hiện thêm nhiều lệnh thì sao ?
+vì vậy mà ta có playbook để viết sẵn các kịch bản cho các server 
 
 ### 3.2. Ansible Playbook
 
