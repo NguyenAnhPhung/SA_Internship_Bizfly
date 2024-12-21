@@ -177,3 +177,72 @@ vars:
       with_items: "{{ my_list }}"
 ```
 
+### 5.2. Biến dạng từ điển 
+
+Biến dạng từ điểu cho phép lưu nhiều cặp `key: value`
+
+```
+vars:
+  server_config:
+    app_name: my_app
+    port: 8080
+    owner: root
+
+tasks:
+  - name: Hiển thị thông tin từ điển
+    debug:
+      msg: "Ứng dụng {{ server_config.app_name }} chạy trên cổng {{ server_config.port }}"
+
+```
+
+### 5.3. Biến mặc định 
+
+Nếu biến không tồn tại bạn có thể gắn giá trị mặc định bằng filter `default`
+
+```
+tasks:
+  - name: Hiển thị ứng dụng (mặc định nếu không có)
+    debug:
+      msg: "Ứng dụng {{ app_name | default('default_app') }}"
+
+```
+
+### 5.4. Tính toán và xử lí biến với filters
+
+Ansible hỗ trợ rất nhiều filters để xử lí biến như:
+
+- lower: chuyển chuỗi thành chữ thường 
+- length: lấy độ dài của danh sách 
+- replace: thay thế chuỗi
+
+ví dụ 
+
+```
+vars:
+  name: "MyApp"
+  my_list: [1, 2, 3]
+
+tasks:
+  - name: Chuyển tên thành chữ thường
+    debug:
+      msg: "{{ name | lower }}"
+  - name: Độ dài danh sách
+    debug:
+      msg: "{{ my_list | length }}"
+  - name: Thay thế chuỗi
+    debug:
+      msg: "{{ name | replace('App', 'Application') }}"
+
+```
+
+## 6. Lỗi thường gặp với biến 
+
+1. **Biến chưa được khai báo:**
+
+   - dùng filter `default` để tránh lỗi 
+
+2. **Cú pháp sai:**
+
+   - Kiểm tra xem có dấu `{{` và `}}` đúng không.
+
+   
