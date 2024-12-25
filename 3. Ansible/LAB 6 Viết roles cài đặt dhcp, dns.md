@@ -160,3 +160,127 @@ ansible-playbook -i inventory playbook.yml
 
 ## 2. DNS
 
+**B1: tạo thư mục role cho DNS**
+
+```
+ansible-galaxy init dns_ansible
+```
+
+**B2: Viết file tasks/main.yml**
+
+```
+---
+# tasks file for dns_ansible
+- name: install bind9
+  apt:
+    name: bind9
+    state: present
+    update_cache: yes
+
+- name: config name.conf.options
+  template:
+    src: named.conf.options.j2
+    dest: /etc/bind/named.conf.options
+
+- name: config named.conf.local
+  template:
+    src: named.conf.local.j2
+    dest: /etc/bind/named.conf.local
+
+- name: config zone file
+  template:
+    src: zone.j2
+    dest: "/etc/bind/db.{{ item.name }}"
+  loop: "{{ domains }}"
+  notify: Restart DNS Service
+~                                    
+```
+
+B3: Cập nhật các mẫu template
+
+1. named.conf.options.j2
+
+   ```
+   options {
+       directory "/var/cache/bind";
+   
+       recursion no;
+       allow-query { any; };
+       listen-on { any; };
+   };
+   ```
+
+2. named.conf.local.j2
+
+   ```
+   {% for domain in domains %}
+   zone "{{ domain.name }}" {
+       type master;
+       file "/etc/bind/db.{{ domain.name }}";
+   };
+   {% endfor %}
+   
+   ```
+
+3. zone.j2
+
+   ```
+   $TTL    604800
+   @       IN      SOA     ns.{{ item.name }}. admin.{{ item.name }}. (
+                           2         ; Serial
+                           604800    ; Refresh
+                           86400     ; Retry
+                           2419200   ; Expire
+                           604800 )  ; Negative Cache TTL
+   
+   @       IN      NS      ns.{{ item.name }}.
+   @       IN      A       {{ item.ip }}
+   ns      IN      A       {{ ip_nameserver }}
+   ```
+
+   
+
+**B4: cập nhật biến default**
+
+```
+---
+# defaults file for dns_ansible
+ip_nameserver: "11.11.11.11"
+domains:
+  - name: "test1.com"
+    ip: "1.2.3.4"
+  - name: "test2.com"
+    ip: "1.2.3.4"
+
+```
+
+**B5: cập nhật handler restart**
+
+```
+---
+# handlers file for dns_ansible
+- name: Restart DNS Service
+  service:
+    name: bind9
+    state: restarted
+  become: yes
+~                  
+```
+
+**B6:  cấu hình ansible playbook **
+
+```
+---
+- hosts: server
+  become: yes
+  roles:
+    - dns_ansible
+~                       
+```
+
+**B7: chạy ansible**
+
+```
+ansible-playbook -i inventoryfily playbook.yml
+```
+
